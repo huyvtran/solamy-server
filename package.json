@@ -1,0 +1,26 @@
+{
+    "name": "solarmy_server",
+    "version": "1.0.0",
+    "description": "diet messenger",
+    "main": "app.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "syssoft",
+    "license": "license",
+    "dependencies": {
+        "cookie-parser": "^1.4.3",
+        "cookie-session": "^2.0.0-beta.3",
+        "express": "^4.16.3",
+        "express-session": "^1.15.6",
+        "formidable": "^1.2.1",
+        "fs": "0.0.1-security",
+        "image-size": "^0.6.2",
+        "mysql": "^2.15.0",
+        "nodemailer": "^4.6.7",
+        "nodemon": "^1.18.10",
+        "path": "^0.12.7",
+        "request": "^2.87.0",
+        "sharp": "^0.20.3"
+    }
+}
