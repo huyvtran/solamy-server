@@ -209,7 +209,7 @@ exports.getQuotation=function(callback){
 
     callback = callback == null? nop:callback;
     
-    var sql = 'SELECT * FROM tbl_estimates';
+    var sql = 'SELECT * FROM tbl_estimates ORDER BY reg_time DESC';
     query(sql, function(err, rows, fields) {
         if (err) {
             callback(null);
@@ -615,9 +615,9 @@ exports.getCompanyDataByCompId = function(data, callback){
      * SELECT C.*, U.company_name, (SELECT ROUND(AVG(R.rate), 1) FROM `tbl_rating` AS R WHERE R.comp_id=C.comp_id AND analyse_id="'+data.analyse_id+'") AS rate
      * FROM `tbl_contract` AS C LEFT JOIN tbl_users AS U ON C.comp_id=U.id WHERE C.comp_id="'+data.comp_id+'" AND analyse_id="'+data.analyse_id
      */
-    var sql = 'SELECT C.*, U.company_name, ';
+    var sql = 'SELECT C.*, U.company_name,A.*, ';
         sql += '(SELECT ROUND(AVG(R.rate), 1) FROM `tbl_rating` AS R WHERE R.comp_id=C.comp_id AND analyse_id="'+data.analyse_id+'") AS rate ';
-        sql += 'FROM `tbl_contract` AS C LEFT JOIN tbl_users AS U ON C.comp_id=U.id WHERE C.comp_id="'+data.comp_id+'" AND analyse_id="'+data.analyse_id+'"';
+        sql += 'FROM `tbl_contract` AS C LEFT JOIN tbl_users AS U ON C.comp_id=U.id LEFT JOIN tbl_analyse AS A ON C.comp_id=A.cont_comp_id WHERE C.comp_id="'+data.comp_id+'" AND analyse_id="'+data.analyse_id+'"';
     query(sql, function(err, rows, fields) {
         if (err) {
             callback(null);
@@ -634,15 +634,29 @@ exports.getCompanyDataByCompId = function(data, callback){
 };
 // 참여업체 상세정보얻기
 exports.getCompanyDetail = function(comp_id, callback){
+    console.log("getCompanyDetail");
+    console.log(comp_id);
     callback = callback == null? nop:callback;
     if(comp_id == null ) {
         callback(false);
         return;
     }
-    var sql  = 'SELECT C.*, U.company_name,U.area, U.address, U.elect_num, AR.solar_power, ';
+
+    var sql  = 'SELECT C.*, U.company_name,U.area, U.address, U.elect_num, AR.solar_power, (SELECT COUNT(*) FROM `tbl_analyse` WHERE cont_comp_id=C.comp_id AND status="4") AS complete_cnt,';
         sql += '(SELECT ROUND(AVG(R.rate), 1) FROM `tbl_rating` AS R WHERE R.comp_id=C.comp_id) AS rate ';
         sql += 'FROM `tbl_contract` AS C LEFT JOIN tbl_users AS U ON C.comp_id=U.id LEFT JOIN tbl_analyse_result AS AR ON C.analyse_id=AR.analyse_id ';
         sql += 'WHERE C.comp_id="'+comp_id+'"';
+  
+    // var sql  = 'SELECT C.*, U.company_name,U.area, U.address, U.elect_num, AR.solar_power, (SELECT COUNT(*) FROM `tbl_analyse` WHERE cont_comp_id=C.comp_id AND status="4") AS complete_cnt,';
+    //     sql += '(SELECT ROUND(AVG(R.rate), 1) FROM `tbl_rating` AS R WHERE R.comp_id=C.comp_id) AS rate';
+    //     sql += 'FROM `tbl_contract` AS C LEFT JOIN tbl_users AS U ON C.comp_id=U.id LEFT JOIN tbl_analyse_result AS AR ON C.analyse_id=AR.analyse_id ';
+    //     sql += 'WHERE C.comp_id="'+comp_id+'"';
+
+    // var sql  = 'SELECT C.*, AA.status U.company_name,U.area, U.address, U.elect_num, AR.solar_power,  ';
+    //     sql += '(SELECT ROUND(AVG(R.rate), 1) FROM `tbl_rating` AS R WHERE R.comp_id=C.comp_id) AS rate ';
+    //     // sql += 'SELECT COUNT(*) FROM tbl_analyse WHERE cont_comp_id=C.comp_id AND status="4" AS complete_cnt,';
+    //     sql += 'FROM `tbl_contract` AS C LEFT JOIN tbl_users AS U ON C.comp_id=U.id LEFT JOIN tbl_analyse_result AS AR ON C.analyse_id=AR.analyse_id';
+    //     sql += 'WHERE C.comp_id="'+comp_id+'"';
     
     query(sql, function(err, rows, fields) {
         if (err) {
